@@ -11,13 +11,13 @@ def connect_db():
 	except:
    		 print "I am unable to connect to the database"
 
-def write_table(conn,rows):
+def write_table(conn,row):
 	""" Write Records to Table 
 	"""
 
 	q = """ insert into attack_records values (%s,%s,%s,%s,%s,%s,%s) """
 	cur = conn.cursor()
-	cur.execute(q, rows)
+	cur.execute(q, row)
     	conn.commit()
 	print "Committed"
 
@@ -30,12 +30,10 @@ def main():
 	consumer = KafkaConsumer(value_deserializer=lambda m: json.loads(m.decode('ascii').decode('utf-8')))
 	consumer.subscribe('AttackActivityStream')
 
-	rows=[]
+	
 	for msg in consumer:
 		print msg		
 		row=[long(msg.value['timestamp']),str(msg.value['attack_type']),str(msg.value['attack_subtype']),float(msg.value['latitude']),float(msg.value['longitude']),str(msg.value['city']),str(msg.value['country'])]
-		
-		
 		conn = connect_db()
 		write_table(conn,row)
 	
