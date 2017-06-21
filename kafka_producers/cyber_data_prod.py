@@ -10,7 +10,7 @@ class Producer(threading.Thread):
 	""" Random Data generator for cyber attacks
 	"""
 
-        producer = KafkaProducer(bootstrap_servers='52.7.164.216:9092')
+        producer = KafkaProducer(bootstrap_servers='XXXX')
 	flag = 1         
         
         while True:
