@@ -32,7 +32,6 @@ def main():
 	consumer = KafkaConsumer()
 	consumer.subscribe('AttackTypeCountStream')
 
-	rows=[]
 	for msg in consumer:
 		print msg.value		
 		key,value = msg.value.split("##")
