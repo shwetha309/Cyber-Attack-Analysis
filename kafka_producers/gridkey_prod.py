@@ -10,7 +10,7 @@ class Producer(threading.Thread):
 	    Write to Kafka Topic
 	"""
 
-        producer = KafkaProducer(bootstrap_servers='52.7.164.216:9092')
+        producer = KafkaProducer(bootstrap_servers='XXXX')
         
       
         while True:
