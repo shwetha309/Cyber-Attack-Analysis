@@ -5,7 +5,7 @@ from kafka import KafkaConsumer
 def connect_db():
 	""" Connect to DB """
 	try:
-    		conn = psycopg2.connect("dbname='attacksdb' user='postgres' host='ip-10-0-0-6' password='insight'")
+    		conn = psycopg2.connect("dbname='attacksdb' user='postgres' host='XXX' password='XXX'")
     		return conn
 	except:
    		 print "I am unable to connect to the database"
