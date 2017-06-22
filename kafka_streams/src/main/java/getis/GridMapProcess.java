@@ -21,7 +21,7 @@ import java.util.*;
 * Kafka Streams. It accumulates the input values of the 
 * GridMapCartesian Topic input over a period of 1 minute
 * and creates a State Store with (key, value) as 
-* ("lat##lon",0)
+* ("lat##lon",0) </p>
 * 
 */
 
@@ -30,6 +30,7 @@ public class GridMapProcess extends AbstractProcessor<String,String> {
 	private KeyValueStore<String, GridMap> GridMapStore;
 	ArrayList<String> coords_list = new ArrayList<String>();
 
+	// Checks if the input coordinates fall within the boundaries
 	public boolean isValid(int lat, int lon)
 	{
 		if((lat >=4050 && lat <= 4090) && (lon >= -7425 && lon <= -7370))
@@ -38,6 +39,8 @@ public class GridMapProcess extends AbstractProcessor<String,String> {
 			return false;
 	}
 
+	// Calculates the neighbors of each lat lon input and adds them to an ArrayList 
+	// and return them
 	public ArrayList<String> find_neighbors(int lat, int lon) {
 		
 		ArrayList<String> neighbors = new ArrayList<String>();
@@ -58,7 +61,7 @@ public class GridMapProcess extends AbstractProcessor<String,String> {
 		return neighbors_list;
 	}
 
-	
+	// Initializing the Processor variables
 	public void init(ProcessorContext context) {
 		this.context = context;
 		this.context.schedule(10000);
@@ -66,6 +69,8 @@ public class GridMapProcess extends AbstractProcessor<String,String> {
 		
 	}
 
+	// This function gets called for every event in the input stream
+	// Adds the neighbors to ArrayList
 	public void process(String key, String value) {
 		String coords = value.replace(",","##").replace("(","").replace(")","").replace("\"","");
 		if (coords_list.contains(coords) == false) {
@@ -76,6 +81,9 @@ public class GridMapProcess extends AbstractProcessor<String,String> {
 	
 	}
 
+	// This function is called at the end of the time window
+	// Calls the find_neighbors function and writes the cell coordinates,
+	// corresponding neighboring cells to the State Store
 	public void punctuate(long timestamp) {
 		
 		for (int i=0;i<coords_list.size();i++)
