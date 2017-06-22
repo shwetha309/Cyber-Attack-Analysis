@@ -13,6 +13,13 @@ import java.util.Date;
 import org.apache.kafka.streams.processor.*;
 import java.util.*;
 
+/**
+* This class extends Kafka stream's Processor class and 
+* implements it's functions. With respect to this project it 
+* accumulates the count of the attacks in GridMapStore (State Store).
+* 
+*/
+
 public class GScoreProcess extends AbstractProcessor<String, RegionSummary> {
 	private ProcessorContext context;
 	private KeyValueStore<String, Double> GScoreStore;
@@ -55,10 +62,14 @@ public class GScoreProcess extends AbstractProcessor<String, RegionSummary> {
 
 	}			
 	
+	/* This function calculates the GScore by using the counts of 
+	* individual cells and neighboring cells and accumulating the 
+	* count over the total count of all cyber attacks 
+	*
+	*/
 	public double calcGScore(ArrayList<String> neighbors) {
 
 		if(sum_attacks == 0) {
-			//System.out.println("NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
 			return 0.0;
 		} 
 		
@@ -85,7 +96,6 @@ public class GScoreProcess extends AbstractProcessor<String, RegionSummary> {
 		double inter_denom = ((( 2200.0 * sum_ww) - ( sum_w * sum_w )) / 2200.0 );
 		double denom = s * Math.sqrt( inter_denom );
 		double g =  (numerator / denom ) ;
-		//System.out.println("G"+g);
 		return g;
 			
 	}
@@ -94,7 +104,7 @@ public class GScoreProcess extends AbstractProcessor<String, RegionSummary> {
 		
 		KeyValueIterator<String, GridMap> iter = this.GridMapStore2.all();	
 		HashSet<String> coords_set = new HashSet<String>();
-		//HashSet<Double> gvalues_set = new HashSet<Double>();
+		
 		
 		PriorityQueue<GScore> gpq = new PriorityQueue<GScore>(5,new Comparator<GScore>() {
 			public int compare (GScore gs1, GScore gs2)
@@ -102,7 +112,7 @@ public class GScoreProcess extends AbstractProcessor<String, RegionSummary> {
 				double g1 = gs1.gscore;
 				double g2 = gs2.gscore;
 
-				if(g1<g2) return -1;
+				if(g1 < g2) return -1;
 				if(g1 > g2) return 1;
 				return 0;
 			}
@@ -117,11 +127,11 @@ public class GScoreProcess extends AbstractProcessor<String, RegionSummary> {
 				ArrayList<String> neighbors = entry.value.neighbors;
 				double g = calcGScore(neighbors);
 				
-				if (g>0.0  && (coords_set.contains(entry.key) == false))
+				if (g > 0.0  && (coords_set.contains(entry.key) == false))
 				{
 					gpq.offer(new GScore(entry.key,g));		
 					coords_set.add(entry.key);
-					//gvalues_set.add(g);
+					
 				}		
 				
 			}
@@ -131,11 +141,11 @@ public class GScoreProcess extends AbstractProcessor<String, RegionSummary> {
 		while(gpq.size()!=0) {
 			GScore gs = gpq.remove();
 			context.forward(gs.coords, ((Long.toString(timestamp))+"##"+gs.coords+"##"+Double.toString(gs.gscore)));
-			System.out.println (gs.coords+"##"+gs.gscore);
+			
 			
 		}
 
-		System.out.println("\n\n\n");	
+			
 
 		sum_attacks = 0;		
 		this.GridMapStore2 = (KeyValueStore<String, GridMap>) context.getStateStore("GridMapStore");
