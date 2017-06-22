@@ -1,6 +1,9 @@
 package classes;
 
-import java.util.*;
+/**
+* Class definition for serializing and deserializing input/ output
+*
+*/
 
 public class GScore  {
 	public String coords;
