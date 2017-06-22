@@ -1,5 +1,11 @@
 package classes;
 
+/**
+* Class Definition for serializing and deserializing 
+* input/ output
+*
+*/
+
 public class RegionSummary {
 	public String attack_type;
 	public String attack_subtype;
@@ -17,8 +23,6 @@ public class RegionSummary {
 		longitude = lon;
 		country = ctry;
 		city = cty;
-	}
-	public RegionSummary() {
 	}
 }
 		
