@@ -19,7 +19,7 @@ I have implemented an end to end pipeline using
 <img href = "giscorecalc.png">
 <li> Interactive query - Finding Real Time Cyber Attack Trends in a region 
 <p> A user can select any region on the map and the trends for a radius of 10 Kms around that point is shown. This involved calculating the <a href = "https://en.wikipedia.org/wiki/Minimum_bounding_box" > Bounding Box</a>.</li>
-</ul
+</ul>
 ## Data Pipeline
 
 <img src = "data_pipeline.jpg" />
