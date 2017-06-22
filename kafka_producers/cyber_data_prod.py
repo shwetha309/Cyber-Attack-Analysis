@@ -32,12 +32,16 @@ class Producer(threading.Thread):
 
 
 def main():
+	""" Creates the Processor Thread
+	"""
 	producer = Producer()
    	producer.start()
     	while True:
 		time.sleep(10)
 
 if __name__ == "__main__":
+    """ Main Function with logging
+    """
     logging.basicConfig(
         format='%(asctime)s.%(msecs)s:%(name)s:%(thread)d:%(levelname)s:%(process)d:%(message)s',
         level=logging.INFO
