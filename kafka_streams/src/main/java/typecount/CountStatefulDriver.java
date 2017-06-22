@@ -1,6 +1,8 @@
 package typecount;
+
 import classes.*;
 import Serializer.*;
+
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -13,6 +15,15 @@ import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
 import org.apache.kafka.streams.state.Stores;
 
 import java.util.*;
+
+/**
+* This driver function takes the AttackRecordsStream input data and does a
+* stateful processing by acuumulating the attack type count. The output is 
+* written to the AttackTypeCountStream. A state store is used to accumulate 
+* count values
+*
+*/
+
 
 public class CountStatefulDriver {
 
@@ -28,6 +39,7 @@ public class CountStatefulDriver {
         final Serde<String> stringSerde = Serdes.String();
         final Serde<Long> longSerde = Serdes.Long();
         
+	// Serializers and Deserializers to parse input
 	Map < String, Object > serdeProps = new HashMap < > ();
         final Serializer < RegionSummary > rsummarySerializer = new JsonPOJOSerializer < > ();
         serdeProps.put("JsonPOJOClass", RegionSummary.class);
@@ -38,6 +50,7 @@ public class CountStatefulDriver {
         rsummaryDeserializer.configure(serdeProps, false);
 	final Serde < RegionSummary > rsummarySerde = Serdes.serdeFrom(rsummarySerializer, rsummaryDeserializer); 
 
+	// Processor Topology
         builder.addSource("InputSource", stringDeserializer, rsummaryDeserializer,"AttackRecordsStream")
                        .addProcessor("agg-process", WindowAggregate::new, "InputSource")
                        .addStateStore(Stores.create("HourlyCount_Store").withStringKeys()
@@ -45,7 +58,7 @@ public class CountStatefulDriver {
                        .addSink("sink-2", "AttackTypeCountStream", stringSerializer, stringSerializer, "agg-process");
 
 
-        System.out.println("Starting Activity Within Hourly Count Processor");
+        System.out.println("Starting Count by Attack Type Stateful Driver");
         KafkaStreams streaming = new KafkaStreams(builder, streamingConfig);
         streaming.start();
         
