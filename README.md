@@ -22,7 +22,7 @@ Real Time Analytics and Trend Features:
 
 Data Pipeline
 
-<img src = "Cyber-Attack-Analysis/data_pipeline.jpg" />
+<img src = "data_pipeline.jpg" />
 
 Ingestion
 <p> The data for cyber attacks was collected from a streaming source and written to the Kafka Topic. The data was also be genrated (for the purpose of scaling) using the cyber_data_prod.py under kafka_producer folder. </p>
