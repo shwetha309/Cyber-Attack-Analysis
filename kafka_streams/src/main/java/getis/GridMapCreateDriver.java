@@ -15,6 +15,12 @@ import org.apache.kafka.streams.state.Stores;
 import org.apache.kafka.streams.processor.*;
 import java.util.*;
 
+/**
+* This class is a driver function that creates a link between the 
+* GridMapProcess and the GScore Process and the three State Stores.
+* Input Topics are the GridMapCartesian and the AttackRecordsStream
+* Output Topic is the GScoreOutput
+*/
 
 public class GridMapCreateDriver {
 	public static void main(String args[]) {
@@ -31,11 +37,8 @@ public class GridMapCreateDriver {
 		
 		TopologyBuilder builder = new TopologyBuilder();
 
-		//TopologyBuilder builder2 = new TopologyBuilder();
         	StringSerializer stringSerializer = new StringSerializer();
 		StringDeserializer stringDeserializer = new StringDeserializer();	
-		
-		//KStreamBuilder builder = new KStreamBuilder();
 		
 		Map < String, Object > serdeProps = new HashMap < > ();
 	        final Serializer < GridMap > gmapSerializer = new JsonPOJOSerializer < > ();
@@ -56,8 +59,6 @@ public class GridMapCreateDriver {
         	rsummaryDeserializer.configure(serdeProps, false);
 		final Serde < RegionSummary > rsummarySerde = Serdes.serdeFrom(rsummarySerializer, rsummaryDeserializer); 
 		
-		//KStream<String, RegionSummary> rsummaryStream= builder.stream(stringSerde, rsummarySerde, "RegionDataStreams");
-		
 		StateStoreSupplier GridMapStore = Stores.create("GridMapStore")
 						.withKeys(Serdes.String())
     						.withValues(gmapSerde)
@@ -74,18 +75,7 @@ public class GridMapCreateDriver {
 						.inMemory()
 						.build();
 		
-			
-	/*	builder.addSource("Grid-Initial", stringDeserializer, stringDeserializer,"Grid-Initial")
-		 //      .addSource("RegionDataStreams", stringDeserializer, rsummaryDeserializer, "RegionDataStreams")
-                       .addProcessor("Process1", GridMapProcess::new, "Grid-Initial")
-		   //    .addProcessor("Process2", GScoreProcess::new, "RegionDataStreams")
-                       .addStateStore(GridMapStore,"Process1");*/
-		     //  .addStateStore(AttackStore, "Process2")
-		      // .addStateStore(GScoreStore, "Process2")
-		     //  .connectProcessorAndStateStores("Process2", "GridMapStore")
-		     // .addSink("SINK2", "GOutput", "Process2");
-	
-		//KStream<String, Long> transformed = input.transform(/* your TransformerSupplier */, countStore.name());
+
 		builder.addSource("Grid-Initial", stringDeserializer, stringDeserializer,"GridMapCartesian")
 			.addSource("readandTransform", stringDeserializer, rsummaryDeserializer, "AttackRecordsStream")
                        .addProcessor("Process1", GridMapProcess::new, "Grid-Initial")
@@ -96,7 +86,7 @@ public class GridMapCreateDriver {
 		       .connectProcessorAndStateStores("Process2", "GridMapStore")
 		       .addSink("SINK2", "GScoreOutput", "Process2");
 
-		System.out.println("Starting GridMap Processor");
+		System.out.println("Starting Getis Driver");
         	KafkaStreams streaming = new KafkaStreams(builder, streamsConfiguration);
 		streaming.start();
 
