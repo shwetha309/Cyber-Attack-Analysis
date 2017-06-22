@@ -1,4 +1,6 @@
 package classes;
+
+// Class definition for serializing and deserializing input/ output
 public class AttackMessage {
         
         public String attack_type;
