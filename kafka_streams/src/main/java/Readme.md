@@ -19,4 +19,4 @@ To execute the programs under kafka_streams folder follow the steps below:
 - `mvn exec:java -D exec.mainClass="typecount.CountStatefulDriver"`
 - Create output topic "AttacksActivityStream"
 - Execute the ActivityWithinRegionDriver program in cyberrecords
-`mvn exec:java -D exec.mainClass="cyberrecords.ActivityWithinRegionDriver"`
+- `mvn exec:java -D exec.mainClass="cyberrecords.ActivityWithinRegionDriver"`
