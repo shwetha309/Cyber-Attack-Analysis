@@ -27,7 +27,7 @@ public class ActivityWithinProcess extends AbstractProcessor<String, RegionSumma
 	private KeyValueStore<String, RegionSummary> regionStore;
 	long records;
 	
-	// 
+	// initializing processor variables and state stores
 	public void init(ProcessorContext context) {
 		this.context = context;
 		this.context.schedule(10000);
@@ -35,6 +35,12 @@ public class ActivityWithinProcess extends AbstractProcessor<String, RegionSumma
 		this.records = 0L;
 	}
 
+	/**
+	* This function gets called for every event in the stream. 
+	* Input is of same datatype as the Input Stream (String, RegionSummary)
+	* Accumulates value in activity store
+	*
+	*/
 	public void process(String key, RegionSummary value) {
 		RegionSummary rs = regionStore.get(key);
 		if(rs == null) {
@@ -43,7 +49,13 @@ public class ActivityWithinProcess extends AbstractProcessor<String, RegionSumma
 			this.regionStore.put(Double.toString(value.latitude)+"_"+Double.toString(value.longitude), value);
 		}
 	}
-
+	
+	/**
+	* This function gets called at the end of the time window.
+	* Iterates through the key store and writes output to stream 
+	* specified in the driver function
+	*
+	*/
 	public void punctuate(long timestamp) {
 		KeyValueIterator<String, RegionSummary> iter = this.regionStore.all();
 
@@ -55,7 +67,7 @@ public class ActivityWithinProcess extends AbstractProcessor<String, RegionSumma
 				
 			}
 		}
-		System.out.println("Counts "+records);
+		
 		this.records=0L;
 		iter.close();
 		context.commit();
