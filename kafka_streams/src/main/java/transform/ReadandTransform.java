@@ -1,8 +1,9 @@
 package tranform;
 
 /**
- * Hello world!
- *
+ * This class parses the input from the cyberwarInput stream.
+ * Content is filtered based on attack type and written to output
+ * stream specified as AttackRecordsStream.
  */
 import classes.*;
 import Serializer.*;
@@ -28,7 +29,8 @@ public class ReadandTransform
 
   	final Serde<String> stringSerde = Serdes.String();
   	final Serde<Long> longSerde = Serdes.Long();
-   
+   	
+	// Serializers and Deserializers for parsing input
   	Map < String, Object > serdeProps = new HashMap < > ();
         final Serializer < AttackMessage > attackMessageSerializer = new JsonPOJOSerializer < > ();
         serdeProps.put("JsonPOJOClass", AttackMessage.class);
@@ -61,6 +63,7 @@ public class ReadandTransform
 	KStreamBuilder builder = new KStreamBuilder();
 	KStream<String, AttackMessage> attackStream= builder.stream(stringSerde, attackMessageSerde, "cyberwarInput");
 
+	// Filtering input data 
   	KStream<String, AttackCategory> categKStream = attackStream
         					      .map((k, v) -> new KeyValue<>(v.attack_type.toString(), new AttackCategory(v.latitude,v.longitude,v.city_target,v.country_target))).filter(new Predicate<String, AttackCategory>() {
       		@Override
@@ -72,19 +75,8 @@ public class ReadandTransform
 	
       		}
     	});
-
-	 
-  	
-	/*KTable<String,Long> categ_count = categKStream.map((k,v) -> new KeyValue<> (k,k)).groupBy((key,value)->key).count("Counts");
-    	//categ_count.to(stringSerde, longSerde, "CategCountStream");
-
-	KStream<String, Long> categ_countKStream = categ_count.toStream();
-
 	
-	KStream<String, HourlyCategSummary > categctKStream = categ_countKStream.map((k,v) -> new KeyValue <> (k, new HourlyCategSummary(k,toIntExact(v))));
-//	categctKStream.to(stringSerde, categCountSerde, "CategCountStream");
-*/
-	
+	// Mappng key value pairs and filtering data    
 	KStream<String, RegionSummary> actKStream = attackStream.map((k,v) -> new KeyValue<>(Double.toString(v.latitude)+"_"+Double.toString(v.longitude),	
 new RegionSummary(v.attack_type,v.attack_subtype,v.timestamp, v.latitude, v.longitude, v.country_target, v.city_target))).filter(new Predicate<String, RegionSummary>() {
                 @Override
@@ -97,8 +89,6 @@ new RegionSummary(v.attack_type,v.attack_subtype,v.timestamp, v.latitude, v.long
                 }
         });
 
-	
-        System.out.println("Heybvffhfhfh");
 	actKStream.through(stringSerde, rsSerde,"AttackRecordsStream");
         KafkaStreams streams = new KafkaStreams(builder, streamsConfiguration);
   	streams.start();
