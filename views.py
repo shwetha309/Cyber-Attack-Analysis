@@ -88,7 +88,7 @@ def connect_db():
 	""" Connect to Database
 	"""
 	try:
-		conn = psycopg2.connect("dbname='attacksdb' user='postgres' host='ec2-34-195-105-184.compute-1.amazonaws.com' password='insight'")
+		conn = psycopg2.connect("dbname='attacksdb' user='postgres' host='XXXX' password='XXX'")
 		return conn
 	except:
 		print "Not connected"
