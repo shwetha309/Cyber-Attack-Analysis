@@ -15,6 +15,16 @@ import java.math.BigInteger;
 import org.apache.kafka.streams.processor.*;
 import java.util.*;
 
+/**
+* <p> 
+* This program extends the AbstractProcessor class of 
+* Kafka Streams. It accumulates the input values of the 
+* GridMapCartesian Topic input over a period of 1 minute
+* and creates a State Store with (key, value) as 
+* ("lat##lon",0)
+* 
+*/
+
 public class GridMapProcess extends AbstractProcessor<String,String> {
 	private ProcessorContext context;
 	private KeyValueStore<String, GridMap> GridMapStore;
@@ -57,7 +67,6 @@ public class GridMapProcess extends AbstractProcessor<String,String> {
 	}
 
 	public void process(String key, String value) {
-//		System.out.println("grid");
 		String coords = value.replace(",","##").replace("(","").replace(")","").replace("\"","");
 		if (coords_list.contains(coords) == false) {
 			coords_list.add(coords);
@@ -75,17 +84,14 @@ public class GridMapProcess extends AbstractProcessor<String,String> {
 			coords[0] = coords[0].replaceAll("\\s","").replace("\"","");
 			coords[1] = coords[1].replaceAll("\\s","").replace("\"","");
 			ArrayList<String> neighbors = find_neighbors(Integer.parseInt(coords[0]),Integer.parseInt(coords[1]));
-		//	if(this.GridMapStore.get(coords_list.get(i))==null)
-		//	{
-				GridMap gmap = new GridMap();
-				gmap.neighbors = neighbors;
-				this.GridMapStore.put(coords_list.get(i),gmap);
-//				System.out.println(neighbors);
-		//	}
+			GridMap gmap = new GridMap();
+			gmap.neighbors = neighbors;
+			this.GridMapStore.put(coords_list.get(i),gmap);
+
 		}			
 
 
-		//iter.close();
+		
 		context.commit();
 	}
 
