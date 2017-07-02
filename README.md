@@ -2,20 +2,20 @@
 This project provides Real Time Analytics on Cyber Attack Hotspots and Trends across the globe
 
 UI is available at <a href="http://shwetha.site"> CyberAttackAnalysis</a>.<br/>
-The presentation is available on <a href= "https://www.slideshare.net/ShwethaNarayanan1/cyber-attacks-spatial-analysis/" > Cyber Attacks Analysis </a>
+The presentation is available at <a href= "https://www.slideshare.net/ShwethaNarayanan1/cyber-attacks-spatial-analysis/" > Cyber Attacks Analysis </a>
 
 I have implemented an end to end pipeline using
 <ul>
 <li> Apache Kafka </li>
 <li> Apache Kafka Streams </li>
-<li> PostgreSQL </li>
-<li> Flask with Highcharts.js </li>
+<li> Postgres </li>
+<li> Python Flask with Highcharts.js </li>
 </ul>
 
 ## Real Time Analytics and Trend Features:
 <ul> 
 <li> Hotspot Analysis - <a href = "http://resources.esri.com/help/9.3/arcgisengine/java/gp_toolref/spatial_statistics_tools/how_hot_spot_analysis_colon_getis_ord_gi_star_spatial_statistics_works.htm" > Getis-Ord Gi* (Spatial Statistic) calculation </a>
-<br/>This score is used to identify spatially significant hotspots for every feature provided. A statistically significant hotspot is a spatial cell with high attack count and is surrounded by cells with large attack count values.</li>
+<br/>This score is used to identify spatially significant hotspots for every feature provided. A statistically significant hotspot is a spatial cell with high attack count and is surrounded by cells with large attack count values. </li>
 <img src = "giscorecalc.png" />
 <li> Interactive query - Finding Real Time Cyber Attack Trends in a region 
 <br/> A user can select any region on the map and the trends for a radius of 10 Kms around that point is shown. This involved calculating the <a href = "https://en.wikipedia.org/wiki/Minimum_bounding_box" > Bounding Box</a>.</li>
@@ -26,10 +26,15 @@ I have implemented an end to end pipeline using
 <img src = "data_pipeline.jpg" />
 
 ## Ingestion
-<p> The data for cyber attacks was collected from a streaming source and written to the Kafka Topic. The data was also artificially generated (for the purpose of scaling) using the cyber_data_prod.py under kafka_producer folder. </p>
+<p> The data for cyber attacks was collected from a streaming source and written to the Kafka Topic. 
+This data comprises of the attack type information and the spatial co-ordinates of the affected servers. In this project, I have considered only Backdoor, Malware and DDOS as cyber attacks. 
+The data was also artificially generated (for the purpose of scaling) using the cyber_data_prod.py under kafka_producer folder.
+On an average, about 100,000 cyber attack events per minute are written to a Kafka Topic. </p>
 
 ## Stream Processing
-<p> Kafka Streams client library was used to perform stream processing. It reads the input from the Kafka topics, processes the data and writes it to another Kafka Topic. The following tasks were performed on streaming data. </p>
+<p> Kafka Streams client library was used to perform stream processing. It reads the input from the Kafka topics, processes the data and writes it to another Kafka Topic. 
+Kafka Streams is only available in Java, Scala. In this project I have used Java. 
+The following tasks were performed on streaming data. </p>
 <ul>
 <li> Parsing the input JSON 
 <li> Filtering the non-attack type information from the input JSON
