@@ -2,7 +2,7 @@
 This project provides Real Time Analytics on Cyber Attack Hotspots and Trends across the globe
 
 UI is available at <a href="http://shwetha.site"> CyberAttackAnalysis</a>.<br/>
-The presentation is available on <a href= "#" > SlideShare </a>
+The presentation is available on <a href= "https://www.slideshare.net/ShwethaNarayanan1/cyber-attacks-spatial-analysis/" > Cyber Attacks Analysis </a>
 
 I have implemented an end to end pipeline using
 <ul>
@@ -26,19 +26,20 @@ I have implemented an end to end pipeline using
 <img src = "data_pipeline.jpg" />
 
 ## Ingestion
-<p> The data for cyber attacks was collected from a streaming source and written to the Kafka Topic. The data was also be genrated (for the purpose of scaling) using the cyber_data_prod.py under kafka_producer folder. </p>
+<p> The data for cyber attacks was collected from a streaming source and written to the Kafka Topic. The data was also artificially generated (for the purpose of scaling) using the cyber_data_prod.py under kafka_producer folder. </p>
 
 ## Stream Processing
-<p> Kafka Streams client library was used to perform stream processing. It reads the input from the Kafka topics, processes the data and writes to another Kafka Topic. The following tasks were performed on streaming data. </p>
+<p> Kafka Streams client library was used to perform stream processing. It reads the input from the Kafka topics, processes the data and writes it to another Kafka Topic. The following tasks were performed on streaming data. </p>
 <ul>
-<li> Parsing the input JSON and filtering the content
+<li> Parsing the input JSON 
+<li> Filtering the non-attack type information from the input JSON
 <li> Aggregating the count of cyber attacks using stateful streaming
-<li> Calculating GiScore using Stateful streaming for a time window of 10 seconds
+<li> Calculating GiScore using stateful streaming for a time window of 10 seconds
 </ul>
 
 ## Database
-I have used PostgreSQL in this project for using bounding box calculations on the data 
-
+I have used PostgreSQL in this project for storing the results of Getis Ord and cyber attack trends along with the geospatial co-ordinates of the regions. 
 ## Front-End
-I have used Flask with Highcharts.js, Google Maps API for front-end
-
+I have used Flask with Highcharts.js, Google Maps API for front-end.
+## Future Work
+Using Kafka Streams, I want to develop a REST API for accessing the internal Kafka Streams State Stores. A state store in Kafka Streams is a key value pair. In this project state stores were used for storing the top 5 spatial cells with high Gi score value.  
